@@ -1,5 +1,7 @@
 # Wiki Schema
 
+If `PURPOSE.md` exists in this directory, read it first — it provides the research goal and overrides judgment calls about what deserves its own page.
+
 Read this file at the start of every session before touching any wiki pages.
 
 ---
@@ -46,6 +48,16 @@ Core idea: instead of RAG (retrieve-and-generate), the LLM acts as a **compiler*
 | `entity` | `wiki/entities/` | Person, tool, organization, or dataset |
 | `comparison` | `wiki/comparisons/` | Side-by-side analysis of 2+ items |
 | `overview` | `wiki/overview/` | Synthesis spanning multiple sources/concepts |
+
+### Page Creation Decision Rules
+
+Before creating a new wiki page, apply these rules:
+
+- **3+ sources reference it** → create a `concept` or `entity` page
+- **Appears in only 1 source** → don't create a page; mention it inline in the `source-summary`
+- **Insight spans 5+ pages** → create an `overview` page
+- **concept vs. entity**: concept = abstract framework or method (e.g., "selectorate theory", "KHB method"); entity = concrete thing that exists (e.g., a person, organization, dataset, country)
+- **When in doubt**: check PURPOSE.md — if it's not central to the research question, don't create a page
 
 ---
 
@@ -141,6 +153,13 @@ When user asks a question about their knowledge base:
 3. Always cite with `[[wikilinks]]` — never answer from memory if the wiki has the answer
 4. If the answer reveals a valuable synthesis not yet in the wiki: **proactively file it** as a new `wiki/overview/` page (tell the user what you saved)
 5. Append to `wiki/log.md`: date, question asked, pages consulted, any new page created
+
+**When more than 10 pages match:**
+- Priority order: `overview` > `concept` / `entity` > `source-summary`
+- Read all overview and concept/entity pages that match
+- For source-summaries: read at most 5 (highest confidence, most recently updated first)
+- Tell the user: "N additional source-summary pages were not read — narrow the question to go deeper"
+- Never try to load the entire wiki into context
 
 ### Lint
 Scan for and report:
