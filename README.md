@@ -19,8 +19,9 @@ Every paper you add gets a structured summary with theory, hypotheses, methods, 
 
 ```
 your-research-topic/
+├── PURPOSE.md              # ← Fill this first: research goal + ingestion rules
 ├── raw/                    # Immutable sources — never edit files here
-│   ├── papers/             # Academic PDFs
+│   ├── papers/             # Academic PDFs (convert with marker for page citations)
 │   ├── articles/           # Web articles, blog posts
 │   └── misc/               # Notes, transcripts, other
 ├── wiki/                   # Claude-maintained structured pages
@@ -33,7 +34,7 @@ your-research-topic/
 │   └── overview/           # Synthesis pages spanning multiple sources
 ├── Attachments/            # Images and resources (Obsidian standard)
 ├── outputs/                # Reports, essays, exports — things you generate
-└── CLAUDE.md               # Wiki schema — Claude reads this first every session
+└── CLAUDE.md               # Wiki schema — Claude reads this every session
 ```
 
 **Rule of thumb**: `raw/` is what you add. `wiki/` is what Claude builds and maintains.
@@ -42,31 +43,43 @@ your-research-topic/
 
 ## Quick Start
 
+### 0. Fill in PURPOSE.md
+
+Before ingesting anything, open `PURPOSE.md` and describe your research goal, core question, and what belongs (or doesn't belong) in this wiki. Claude reads this at the start of every session to make better judgment calls.
+
 ### 1. Clone and rename
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/academic-llm-wiki.git my-research
+git clone https://github.com/ganma0517/academic-llm-wiki.git my-research
 cd my-research
 ```
 
-### 2. Add your PDFs
+### 2. Convert and add your PDFs
 
-Drop papers into `raw/papers/`. Filenames don't matter much; use something readable:
+To preserve page numbers for citations, convert PDFs with [marker](https://github.com/VikParuchuri/marker) before ingesting:
 
+```bash
+# Install: pip install marker-pdf
+marker_single raw/papers/yourpaper.pdf --output_dir raw/papers/ --output_format markdown
 ```
-raw/papers/Bowler_2004_recall-representation.pdf
-raw/papers/Mansbridge_2003_rethinking-representation.pdf
+
+If you only need full-text search and don't care about page citations, `pdftotext` is faster:
+
+```bash
+pdftotext raw/papers/yourpaper.pdf raw/papers/yourpaper.txt
 ```
+
+Drop converted files into `raw/papers/`. Original PDFs can stay there too for reference.
 
 ### 3. Tell Claude to ingest
 
-Open the folder in Claude Code (or Cursor with Claude) and say:
+Open the folder in Claude Code and say:
 
 ```
 Ingest the papers in raw/papers/
 ```
 
-Claude will read `CLAUDE.md` first, then process each paper into a structured wiki page.
+Claude will read `PURPOSE.md` and `CLAUDE.md` first, then process each paper into a structured wiki page.
 
 ### 4. Query your knowledge base
 
@@ -117,7 +130,7 @@ confidence: high
 ## Limitations / Notes
 ```
 
-Page citations (`p. 12`, `pp. 12–15`) are extracted directly from the PDF so you can trace every claim.
+Page citations (`p. 12`, `pp. 12–15`) are extracted directly from the converted Markdown so you can trace every claim.
 
 ---
 
@@ -152,6 +165,7 @@ This repo is Obsidian-compatible out of the box. Open the root folder as a vault
 
 ## Workflow Tips
 
+- Fill `PURPOSE.md` before the first ingest — it shapes every page Claude creates
 - Add papers in batches — ingesting 5 at once is as easy as 1
 - Use `wiki/overview/` pages for literature reviews that span many sources
 - Use `wiki/comparisons/` when you want a structured side-by-side (e.g., two competing theoretical frameworks)
